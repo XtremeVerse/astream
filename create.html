@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Timer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root { --bg:#121225; --card:#1b1b38; --hover:#26264d; --accent:#7f5af0; --ok:#00c896; --muted:#bdbde6;}
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: Poppins, system-ui, Arial; color:#fff;
+      background: linear-gradient(120deg,#3a0ca3,#7209b7,#f72585);
+      min-height:100vh; padding:20px;
+    }
+    header{max-width:1000px;margin:0 auto 16px auto; display:flex; gap:12px; align-items:center; justify-content:space-between}
+    .title{font-size:1.6rem; font-weight:800; letter-spacing:.5px}
+    .name-wrap{display:flex; gap:10px; align-items:center; flex:1; justify-content:flex-end}
+    .name-wrap input{
+      width:min(440px, 70vw); padding:12px 14px; border-radius:12px; border:0; outline:0;
+      background:#ffffff14; color:#fff; font-size:15px;
+    }
+    .save-btn{
+      padding:12px 18px; border:0; border-radius:12px; cursor:pointer; font-weight:700;
+      background: linear-gradient(90deg, #a020f0, #ff3366);
+      color:#fff; transition:.2s transform, .2s box-shadow;
+    }
+    .save-btn:hover{ transform: translateY(-2px); box-shadow:0 8px 24px #00000055 }
+    .grid{max-width:1000px;margin:18px auto; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px}
+    .category{
+      background:#ffffff12; border:1px solid #ffffff1a; border-radius:16px; padding:14px 14px 8px;
+    }
+    .cat-head{display:flex; align-items:center; justify-content:space-between; cursor:pointer; padding:6px 4px}
+    .cat-head h2{margin:0; font-size:1.05rem}
+    .cat-head .toggle{opacity:.8}
+    .features{display:none; margin-top:10px; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px}
+    .feature{
+      background:#1e1e3e; border:1px solid #ffffff1a; border-radius:12px; padding:10px;
+      transition:.18s transform, .18s background; position:relative; overflow:hidden
+    }
+    .feature:hover{ transform: translateY(-2px); background:#2a2a58 }
+    .feature .name{font-weight:700; font-size:.95rem}
+    .feature .desc{font-size:.74rem; color:var(--muted); margin-top:4px; line-height:1.1}
+    .feature .actions{display:flex; gap:6px; margin-top:8px}
+    .tiny{font-size:.72rem; padding:6px 8px; border-radius:10px; border:0; cursor:pointer}
+    .add{ background:var(--ok); color:#062d22; font-weight:700 }
+    .open{ background:#ffffff24; color:#fff }
+    .feature:active{ transform: scale(1.03) }
+    .selected{
+      max-width:1000px; margin:16px auto; background:#ffffff10; border:1px solid #ffffff1a; border-radius:16px; padding:12px;
+    }
+    .chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px}
+    .chip{background:#ffffff22; border:1px solid #ffffff2a; border-radius:999px; padding:6px 10px; font-size:.8rem; display:flex; gap:6px; align-items:center}
+    .chip button{all:unset; cursor:pointer; opacity:.8}
+    footer{max-width:1000px;margin:24px auto 6px auto; opacity:.7; font-size:.9rem; text-align:center}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">🧭 Create Timer</div>
+    <div class="name-wrap">
+      <input id="timerName" placeholder="Timer name (required)" />
+      <button id="saveTimer" class="save-btn">💾 Save</button>
+    </div>
+  </header>
+
+  <!-- Selected preview -->
+  <section class="selected">
+    <div><strong>Selected Features:</strong></div>
+    <div id="chips" class="chips"></div>
+  </section>
+
+  <main class="grid">
+    <!-- ========== Fitness ========== -->
+    <section class="category">
+      <div class="cat-head" data-toggle="fitness"><h2>🏋️ Fitness / Health Tools</h2><span class="toggle">▼</span></div>
+      <div id="fitness" class="features">
+        <div class="feature" data-name="Workout Planner" data-link="workout.html">
+          <div class="name">Workout Planner</div>
+          <div class="desc">Choose body parts, reps, sets, schedule.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="workout.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Exercise Timers" data-link="exercise-timers.html">
+          <div class="name">Exercise Timers</div>
+          <div class="desc">HIIT, rest, custom sets.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="exercise-timers.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Diet & Meal Planner" data-link="diet.html">
+          <div class="name">Diet & Meal Planner</div>
+          <div class="desc">Calories + suggested meal ideas.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="diet.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Water Reminder" data-link="water.html">
+          <div class="name">Water Reminder</div>
+          <div class="desc">Gentle reminders to hydrate.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="water.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Sleep Tracker" data-link="sleep.html">
+          <div class="name">Sleep Tracker</div>
+          <div class="desc">Hours slept & quality input.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="sleep.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Fitness Progress" data-link="fitness-progress.html">
+          <div class="name">Progress Tracker</div>
+          <div class="desc">Weight, BMI, body fat %, charts.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="fitness-progress.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Meditation & Breathing" data-link="meditation.html">
+          <div class="name">Meditation & Breathing</div>
+          <div class="desc">Guided timer for calm focus.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="meditation.html" target="_blank">Open</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Study ========== -->
+    <section class="category">
+      <div class="cat-head" data-toggle="study"><h2>📚 Study & Productivity Tools</h2><span class="toggle">▼</span></div>
+      <div id="study" class="features">
+        <div class="feature" data-name="Pomodoro Timer" data-link="pomodoro.html">
+          <div class="name">Pomodoro Timer</div>
+          <div class="desc">Custom study/break intervals with alerts.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="pomodoro.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Daily Planner" data-link="daily-planner.html">
+          <div class="name">Daily Planner</div>
+          <div class="desc">Add/edit/remove tasks with deadlines.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="daily-planner.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Progress Tracker" data-link="study-progress.html">
+          <div class="name">Progress Tracker</div>
+          <div class="desc">% bar showing tasks done.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="study-progress.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Notes Pad" data-link="notes.html">
+          <div class="name">Notes Pad</div>
+          <div class="desc">Quick notes saved in browser.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="notes.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="To-do List / Tasks" data-link="todo.html">
+          <div class="name">To-do List / Task Manager</div>
+          <div class="desc">Categories, deadlines, progress bar.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="todo.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Exam Countdown" data-link="exam-countdown.html">
+          <div class="name">Exam Countdown</div>
+          <div class="desc">Important exam/event timers.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="exam-countdown.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Flashcards & Quiz" data-link="flashcards.html">
+          <div class="name">Flashcards & Quiz</div>
+          <div class="desc">Generate & practice flashcards.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="flashcards.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Study Tracker" data-link="study-tracker.html">
+          <div class="name">Study Tracker</div>
+          <div class="desc">Hours per day/week/month with graphs.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="study-tracker.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Group Study (Phase 2)" data-link="group-study.html">
+          <div class="name">Group Study (Phase 2)</div>
+          <div class="desc">Invite friends to study together online.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="group-study.html" target="_blank">Open</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Time & Life ========== -->
+    <section class="category">
+      <div class="cat-head" data-toggle="life"><h2>📅 Time & Life Management</h2><span class="toggle">▼</span></div>
+      <div id="life" class="features">
+        <div class="feature" data-name="Daily Planner / Calendar" data-link="calendar.html">
+          <div class="name">Daily Planner / Calendar</div>
+          <div class="desc">Simple calendar + schedule.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="calendar.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="World Clock & Timezones" data-link="world-clock.html">
+          <div class="name">World Clock & Timezone Converter</div>
+          <div class="desc">Know the time anywhere.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="world-clock.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Expense Tracker" data-link="expenses.html">
+          <div class="name">Expense Tracker</div>
+          <div class="desc">Simple inputs + pie chart.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="expenses.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Shopping List" data-link="shopping-list.html">
+          <div class="name">Shopping List Generator</div>
+          <div class="desc">Tick items as you buy.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="shopping-list.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Goal Tracker" data-link="goals.html">
+          <div class="name">Goal Tracker</div>
+          <div class="desc">Long-term milestones with steps.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="goals.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Habit Builder" data-link="habits.html">
+          <div class="name">Habit Builder</div>
+          <div class="desc">Daily streaks & consistency meter.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="habits.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Focus Music Player" data-link="focus-music.html">
+          <div class="name">Focus Music Player</div>
+          <div class="desc">Lo-fi, classical, nature sounds.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="focus-music.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Stopwatch & Countdown" data-link="stopwatch-countdown.html">
+          <div class="name">Stopwatch & Countdown</div>
+          <div class="desc">General timing tools.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="stopwatch-countdown.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Reminders" data-link="reminders.html">
+          <div class="name">Reminders</div>
+          <div class="desc">Simple alarms/notifications.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="reminders.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Theme Customizer" data-link="theme.html">
+          <div class="name">Theme Customizer</div>
+          <div class="desc">Dark/Light + colors.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="theme.html" target="_blank">Open</a>
+          </div>
+        </div>
+
+        <div class="feature" data-name="Drag & Drop Dashboard" data-link="dashboard.html">
+          <div class="name">Drag & Drop Dashboard</div>
+          <div class="desc">Arrange widgets & toggle on/off.</div>
+          <div class="actions">
+            <button class="tiny add">+ Add</button>
+            <a class="tiny open" href="dashboard.html" target="_blank">Open</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>All selections are saved locally (no login). You can add functionality in the linked pages later.</footer>
+
+  <script>
+    // Expand / collapse categories
+    document.querySelectorAll('.cat-head').forEach(h=>{
+      h.addEventListener('click', ()=>{
+        const id = h.dataset.toggle;
+        const box = document.getElementById(id);
+        const open = box.style.display === 'grid';
+        box.style.display = open ? 'none' : 'grid';
+        h.querySelector('.toggle').textContent = open ? '▼' : '▲';
+      });
+    });
+
+    // Selected features state
+    const selected = new Map(); // name -> link
+    const chips = document.getElementById('chips');
+
+    function renderChips(){
+      chips.innerHTML = '';
+      [...selected.entries()].forEach(([name, link])=>{
+        const c = document.createElement('div');
+        c.className = 'chip';
+        c.innerHTML = `<span>${name}</span><button title="Remove">✕</button>`;
+        c.querySelector('button').onclick = ()=>{ selected.delete(name); renderChips(); };
+        chips.appendChild(c);
+      });
+    }
+
+    // Add buttons
+    document.querySelectorAll('.feature .add').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const f = btn.closest('.feature');
+        const name = f.dataset.name;
+        const link = f.dataset.link;
+        if(!selected.has(name)){ selected.set(name, link); renderChips(); }
+        // tactile grow
+        f.style.transform = 'scale(1.07)';
+        setTimeout(()=>f.style.transform='scale(1)',150);
+      });
+    });
+
+    // Save timer
+    document.getElementById('saveTimer').addEventListener('click', ()=>{
+      const timerName = document.getElementById('timerName').value.trim();
+      if(!timerName){ alert('Please enter a timer name.'); return; }
+      if(selected.size===0){ if(!confirm('No features selected. Save anyway?')) return; }
+
+      const timers = JSON.parse(localStorage.getItem('timers')||'[]');
+      const id = 't_' + Date.now();
+      const features = [...selected.entries()].map(([name, link])=>({name, link}));
+
+      timers.push({ id, name: timerName, features, createdAt: new Date().toISOString() });
+      localStorage.setItem('timers', JSON.stringify(timers));
+
+      // Navigate back to dashboard
+      window.location.href = 'start.html';
+    });
+  </script>
+</body>
+  </html>
