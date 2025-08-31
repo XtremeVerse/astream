@@ -1,0 +1,302 @@
+<!DOCTYPE html>  <html lang="en">    <head>    
+  <meta charset="UTF-8" />    
+  <title>Start - My Timer Website</title>    
+  <meta name="viewport" content="width=device-width, initial-scale=1" />    
+  <style>    
+    :root { --card:#ffffff14; --hover:#ffffff22; }    
+    *{box-sizing:border-box}    
+    body{    
+      margin:0; font-family:Poppins, system-ui, Arial; color:#fff; text-align:center;    
+      background:linear-gradient(120deg, #3a0ca3, #7209b7, #3A248A);    
+      min-height:100vh; display:flex; flex-direction:column; align-items:center;    
+    }    
+    header{ width:100%; padding:22px; background:rgba(255,255,255,.06); border-bottom:1px solid rgba(255,255,255,.12) }    
+    header h1{ margin:0; font-size:2rem }    
+    header p{ margin:6px 0 0; font-style:italic; color:#e9d7ff }  .top-actions{margin:18px 0}    
+    .card h3 {  
+  margin: 0 0 12px 0;   /* more space under title */  
+  font-size: 1.2rem;  
+}  .meta {
+opacity: .75;
+font-size: .8rem;
+margin-bottom: 12px;  /* extra space under date */
+}
+
+.progress-text {
+position: absolute;
+top: 16px;    /* moved slightly down /
+right: 16px;  / a little more padding */
+}
+
+.weekly-record {
+margin-top: 10px;   /* spacing from progress % /
+margin-bottom: 12px; / spacing before list */
+display: flex;
+gap: 4px;
+justify-content: flex-start;
+}
+.create-btn{
+display:inline-block; padding:14px 34px; border-radius:999px; text-decoration:none; color:#fff; font-weight:800;
+background:linear-gradient(90deg, purple, red); transition:.2s transform, .2s box-shadow
+}
+.create-btn:hover{ transform:scale(1.05); box-shadow:0 10px 24px #00000055 }
+
+.wrap{ width:min(1000px, 92vw); margin:12px auto 28px auto; }
+.grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); gap:16px; margin-top:16px }
+.card{
+position:relative;
+text-align:left; background:var(--card); border:1px solid #ffffff22; border-radius:16px; padding:16px;
+transition:.2s transform, .2s background;
+}
+.card:hover{ transform: translateY(-2px); background:var(--hover) }
+.card h3{ margin:0 0 8px 0; font-size:1.2rem }
+.meta{opacity:.75; font-size:.8rem; margin-bottom:8px}
+
+ul{ margin:8px 0 0 0; padding:0; list-style:none }
+li{ display:flex; justify-content:space-between; align-items:center; margin:6px 0 }
+.feature-btn{
+flex:1; padding:8px 12px; border-radius:8px;
+background:linear-gradient(90deg, #6a11cb, #ff006e); border:none;
+color:white; text-align:left; cursor:pointer; transition:transform .2s;
+}
+.feature-btn:hover{ transform:scale(1.05) }
+input[type=checkbox]{ transform:scale(1.3); cursor:pointer }
+
+.progress-text {
+position: absolute;
+top: 12px;
+right: 12px;
+font-size: 0.8rem;
+font-weight: 600;
+background: rgba(255,255,255,0.2);
+padding: 2px 8px;
+border-radius: 6px;
+}
+.weekly-record {
+position: absolute;
+top: 32px;
+right: 12px;
+font-size: 0.7rem;
+opacity: 0.9;
+}
+.week-day {
+margin: 0 2px;
+padding: 1px 4px;
+border-radius: 3px;
+background: rgba(255,255,255,0.15);
+}
+.done-day {
+background: #00f5d4;
+color: black;
+font-weight: 700;
+}
+
+.row{ display:flex; gap:8px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin-top:10px }
+.del{ all:unset; background:#ff4d6d; color:#12000a; padding:8px 10px; border-radius:10px; cursor:pointer; font-weight:700 }
+
+.empty{
+opacity:.85; margin:24px auto; max-width:680px; background:#ffffff12; border:1px dashed #ffffff35; border-radius:16px;
+padding:18px;
+}
+footer{ margin-top:auto; padding:14px; opacity:.7 }
+/* --- New cleaner row for weekly + percent --- */
+.progress-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin: 8px 0 14px 0;
+}
+
+.weekly-record-inline {
+display: flex;
+gap: 4px;
+}
+
+.progress-badge {
+background: rgba(255,255,255,0.25);
+padding: 2px 8px;
+border-radius: 6px;
+font-size: 0.75rem;
+font-weight: 600;
+}
+.meta-badge {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+font-size: 0.75rem;
+opacity: 0.8;
+background: rgba(255,255,255,0.1);
+padding: 4px 8px;
+border-radius: 8px;
+margin-bottom: 10px;
+}
+.meta-badge::before {
+content: "🗓️";
+font-size: 0.9rem;
+}
+/* Add more space between feature rows */
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;   /* increased from 6px */
+}
+
+/* --- New cleaner row for weekly + percent --- */
+.progress-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0 14px 0;
+}
+
+.weekly-record-inline {
+  display: flex;
+  gap: 4px;
+}
+
+.progress-badge {
+  background: rgba(255,255,255,0.25);
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  background: rgba(255,255,255,0.1);
+  padding: 4px 8px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.meta-badge::before {
+  content: "🗓️";
+  font-size: 0.9rem;
+}
+/* --- spacing overrides --- */
+.card {
+  padding: 22px;        /* more inner space */
+  margin-bottom: 20px;  /* space between cards */
+}
+
+li {
+  margin: 12px 0;       /* more space between feature rows */
+}
+/* --- Fix for crashing meta + badges --- */
+.card {
+  padding-top: 60px; /* extra space so progress/weekly don’t overlap title/meta */
+}
+
+.progress-text,
+.weekly-record {
+  position: absolute;
+  right: 12px;
+}
+
+.progress-text {
+  top: 12px;
+}
+
+.weekly-record {
+  top: 34px; /* just under percent */
+}
+
+.meta {
+  margin-top: 10px;
+}
+  </style>    
+</head>    
+<body>    
+  <header>    
+    <h1>My Timer Website</h1>    
+    <p>"Time waits for no one, but you can control it."</p>    
+  </header>    <div class="top-actions">    
+    <a href="create.html" class="create-btn">Create New +</a>    
+  </div>    <div class="wrap">    
+    <div id="list" class="grid"></div>    
+    <div id="empty" class="empty" style="display:none">    
+      No timers yet. Click <strong>Create New +</strong> to build your first timer.    
+    </div>    
+  </div>    <footer>© 2025 My Timer Website • All local, no login needed</footer>    <script>    
+    const list = document.getElementById('list');    
+    const empty = document.getElementById('empty');    function getWeekArray() {    
+  return ["Su","Mo","Tu","We","Th","Fr","Sa"];    
+}    
+
+function load(){    
+  const timers = JSON.parse(localStorage.getItem('timers')||'[]');    
+  list.innerHTML = '';    
+  if(!timers.length){ empty.style.display='block'; return; }    
+  empty.style.display='none';    
+
+  timers.forEach(t=>{    
+    const card = document.createElement('div');    
+    card.className = 'card';    
+    const when = new Date(t.createdAt || Date.now()).toLocaleString();    
+
+    let total = t.features?.length || 0;    
+    let done = t.features?.filter(f=>f.done)?.length || 0;    
+    let percent = total>0 ? Math.round((done/total)*100) : 0;    
+
+    // weekly record    
+    let weekArr = getWeekArray();    
+    let today = new Date().getDay();    
+    t.weekly = t.weekly || {}; // {0:true,1:false,...}    
+    if(percent===100) {    
+      t.weekly[today] = true;    
+    }    
+    localStorage.setItem('timers', JSON.stringify(JSON.parse(localStorage.getItem('timers')||'[]').map(x=>x.id===t.id?t:x)));    
+
+    let weekHTML = weekArr.map((d,i)=>`<span class="week-day ${t.weekly[i]?'done-day':''}">${d}</span>`).join('');    
+
+    const feats = t.features?.map((f,i)=>`    
+      <li>    
+        <button class="feature-btn" onclick="location.href='${f.link}'">${f.name}</button>    
+        <input type="checkbox" ${f.done?"checked":""} data-timer="${t.id}" data-index="${i}">    
+      </li>`).join('') || '';    
+
+    card.innerHTML = `    
+      <h3>🕒 ${t.name}</h3>    
+      <div class="meta">Created: ${when}</div>    
+      <div class="progress-text">${percent}%</div>    
+      <div class="weekly-record">${weekHTML}</div>    
+      <ul>${feats}</ul>    
+      <div class="row">    
+        <div></div>    
+        <button class="del">Delete</button>    
+      </div>    
+    `;    
+
+    // delete    
+    card.querySelector('.del').onclick = ()=>{    
+      const all = JSON.parse(localStorage.getItem('timers')||'[]');    
+      const next = all.filter(x=>x.id!==t.id);    
+      localStorage.setItem('timers', JSON.stringify(next));    
+      load();    
+    };    
+
+    // checkbox update    
+    card.querySelectorAll('input[type=checkbox]').forEach(ch=>{    
+      ch.onchange = ()=>{    
+        const all = JSON.parse(localStorage.getItem('timers')||'[]');    
+        const target = all.find(x=>x.id===t.id);    
+        if(target && target.features[ch.dataset.index]){    
+          target.features[ch.dataset.index].done = ch.checked;    
+          localStorage.setItem('timers', JSON.stringify(all));    
+          load();    
+        }    
+      };    
+    });    
+
+    list.appendChild(card);    
+  });    
+}    
+load();
+
+</script>  </body>
+
+</html>    
