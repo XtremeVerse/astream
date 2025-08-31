@@ -1,0 +1,343 @@
+<!DOCTYPE html>    
+<html lang="en">      
+<head>      
+  <meta charset="UTF-8">      
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">      
+  <title>Daily Planner</title>      
+  <style>      
+    :root {      
+      --bg: #F5F5F5;      
+      --text: #1A1A1A;      
+      --primary: #007BFF;      
+      --accent: #28A745;      
+      --card: #ffffff;      
+    }    
+
+    body {      
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;      
+      background: var(--bg);      
+      color: var(--text);      
+      margin: 0;      
+      padding: 0;      
+      display: flex;      
+      flex-direction: column;      
+      min-height: 100vh;      
+    }      
+
+    header {      
+      background: var(--primary);      
+      color: white;      
+      padding: 20px;      
+      text-align: center;      
+      font-size: 2rem;      
+      font-weight: bold;      
+      letter-spacing: 1px;      
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);      
+    }      
+
+    main {      
+      flex: 1;      
+      width: 95%;      
+      max-width: 1200px;      
+      margin: 20px auto;      
+      padding: 20px;      
+      box-sizing: border-box;      
+    }      
+
+    .planner-header {      
+      display: flex;      
+      justify-content: space-between;      
+      align-items: center;      
+      margin-bottom: 20px;      
+      flex-wrap: wrap;      
+      gap: 10px;      
+    }      
+
+    .controls {      
+      display: flex;      
+      flex-wrap: wrap;      
+      gap: 10px;      
+    }      
+
+    select, button {      
+      padding: 8px 12px;      
+      border: none;      
+      border-radius: 8px;      
+      font-size: 1rem;      
+      cursor: pointer;      
+    }      
+
+    button {      
+      background: var(--primary);      
+      color: #fff;      
+      transition: 0.3s;      
+    }      
+
+    button:hover {      
+      opacity: 0.9;      
+    }      
+
+    .task-form {      
+      display: flex;      
+      gap: 10px;      
+      margin-bottom: 20px;      
+      flex-wrap: wrap;      
+    }      
+
+    .task-form input, .task-form select, .task-form button {      
+      flex: 1;      
+      min-width: 120px;      
+    }      
+
+    .task-sections {      
+      display: grid;      
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));      
+      gap: 24px;      
+    }      
+
+    .time-section {      
+      background: var(--card);      
+      border-radius: 14px;      
+      padding: 20px;      
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);      
+      min-height: 220px;      
+    }      
+
+    .time-section h3 {      
+      margin-top: 0;      
+      color: var(--primary);      
+    }      
+
+    .task-list {      
+      list-style: none;      
+      padding: 0;      
+      margin: 0;      
+    }      
+
+    .task-list li {      
+      display: flex;      
+      justify-content: space-between;      
+      align-items: center;      
+      background: #f0f0f0;      
+      margin: 8px 0;      
+      padding: 10px 14px;      
+      border-radius: 10px;      
+      word-wrap: break-word;      
+      position: relative;      
+    }      
+
+    .task-list li.completed span {      
+      text-decoration: line-through;      
+      opacity: 0.7;      
+    }      
+
+    /* 3-dot menu button */    
+    .menu-btn {    
+      background: none;    
+      border: none;    
+      font-size: 1.4rem;    
+      cursor: pointer;    
+      padding: 4px;    
+      color: black; /* ✅ make 3 dots black */    
+    }      
+
+    /* Dropdown menu */      
+    .dropdown {      
+      position: absolute;      
+      right: 10px;      
+      top: 35px;      
+      background: white;      
+      border: 1px solid #ddd;      
+      border-radius: 8px;      
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);      
+      display: none;      
+      flex-direction: column;      
+      min-width: 120px;      
+      z-index: 100;      
+    }      
+
+    .dropdown button {      
+      background: none;      
+      color: var(--text);      
+      text-align: left;      
+      padding: 8px 12px;      
+      font-size: 0.9rem;      
+      border-radius: 0;      
+    }      
+
+    .dropdown button:hover {      
+      background: #f2f2f2;      
+    }      
+
+    footer {      
+      background: #111;      
+      color: #aaa;      
+      text-align: center;      
+      padding: 10px;      
+      font-size: 0.9rem;      
+    }      
+
+    /* Mobile */      
+    @media (max-width: 600px) {      
+      header {      
+        font-size: 1.6rem;      
+        padding: 15px;      
+      }      
+      .task-sections {      
+        grid-template-columns: 1fr;      
+        gap: 16px;      
+      }      
+      .time-section {      
+        padding: 16px;      
+      }      
+    }
+  </style>      
+</head>      
+<body>      
+  <header id="plannerHeader">📅 Daily Planner</header>      
+  <main>      
+    <div class="planner-header">      
+      <h2>Plan Your Day</h2>      
+      <div class="controls">      
+        <select id="colorTheme" onchange="changeTheme()">      
+          <option value="minimalist">🎯 Minimalist</option>      
+          <option value="calm">🌊 Calm</option>      
+          <option value="nature">🌱 Nature</option>      
+          <option value="pomodoro">🍅 Pomodoro</option>      
+        </select>      
+        <button onclick="switchView('day')">Day View</button>      
+        <button onclick="switchView('week')">Week View</button>      
+      </div>      
+    </div>    
+
+    <form class="task-form" onsubmit="addTask(event)">      
+      <input type="text" id="taskInput" placeholder="Enter task..." required>      
+      <select id="timeSlot">      
+        <option value="Morning">Morning</option>      
+        <option value="Afternoon">Afternoon</option>      
+        <option value="Evening">Evening</option>      
+        <option value="Night">Night</option>      
+      </select>      
+      <button type="submit">➕ Add</button>      
+    </form>      
+
+    <div class="task-sections" id="planner"></div>
+  </main>        
+
+  <footer>✨ Stay productive. Plan. Focus. Achieve.</footer>        
+
+  <script>      
+    let tasks = JSON.parse(localStorage.getItem("dailyPlanner")) || {};      
+      
+    function renderPlanner() {      
+      const planner = document.getElementById("planner");      
+      planner.innerHTML = "";      
+      ["Morning", "Afternoon", "Evening", "Night"].forEach(slot => {      
+        const section = document.createElement("div");      
+        section.classList.add("time-section");      
+        section.innerHTML = `<h3>${slot}</h3><ul class="task-list" id="${slot}"></ul>`;      
+        planner.appendChild(section);      
+      
+        if (tasks[slot]) {      
+          tasks[slot].forEach((task, index) => {      
+            const li = document.createElement("li");      
+            li.className = task.completed ? "completed" : "";      
+            li.innerHTML = `      
+              <span onclick="toggleComplete('${slot}', ${index})">${task.text}</span>    
+              <button class="menu-btn" onclick="toggleMenu(this)">⋮</button>      
+              <div class="dropdown">      
+                <button onclick="toggleComplete('${slot}', ${index})">✔ Complete</button>      
+                <button onclick="editTask('${slot}', ${index})">✏ Edit</button>      
+                <button onclick="deleteTask('${slot}', ${index})">🗑 Delete</button>      
+              </div>      
+            `;      
+            section.querySelector(".task-list").appendChild(li);      
+          });      
+        }      
+      });      
+    }      
+      
+    function toggleMenu(button) {      
+      const dropdown = button.nextElementSibling;      
+      const isVisible = dropdown.style.display === "flex";      
+      document.querySelectorAll(".dropdown").forEach(menu => menu.style.display = "none");      
+      dropdown.style.display = isVisible ? "none" : "flex";      
+    }      
+      
+    function addTask(event) {      
+      event.preventDefault();      
+      const taskInput = document.getElementById("taskInput");      
+      const timeSlot = document.getElementById("timeSlot").value;      
+      
+      if (!tasks[timeSlot]) tasks[timeSlot] = [];      
+      tasks[timeSlot].push({ text: taskInput.value, completed: false });      
+      taskInput.value = "";      
+      saveTasks();      
+    }      
+      
+    function toggleComplete(slot, index) {      
+      tasks[slot][index].completed = !tasks[slot][index].completed;      
+      saveTasks();      
+    }      
+      
+    function editTask(slot, index) {      
+      const newTask = prompt("Edit task:", tasks[slot][index].text);      
+      if (newTask) tasks[slot][index].text = newTask;      
+      saveTasks();      
+    }      
+      
+    function deleteTask(slot, index) {      
+      tasks[slot].splice(index, 1);      
+      saveTasks();      
+    }      
+      
+    function saveTasks() {      
+      localStorage.setItem("dailyPlanner", JSON.stringify(tasks));      
+      renderPlanner();      
+    }      
+      
+    function switchView(view) {      
+      alert(view + " view coming soon!");      
+    }      
+      
+    function changeTheme() {      
+      const theme = document.getElementById("colorTheme").value;      
+      const root = document.documentElement;      
+      
+      const palettes = {      
+        minimalist: { bg: "#F5F5F5", text: "#1A1A1A", primary: "#007BFF", accent: "#28A745", card: "#ffffff" },      
+        calm: { bg: "#E6F4F1", text: "#4A4A4A", primary: "#008080", accent: "#A3A77C", card: "#ffffff" },      
+        nature: { bg: "#FDF7F0", text: "#4F3C2C", primary: "#A1B578", accent: "#E2725B", card: "#ffffff" },      
+        pomodoro: { bg: "#F0F0F0", text: "#333333", primary: "#DC3545", accent: "#FFC107", card: "#ffffff" }      
+      };      
+      
+      let colors = palettes[theme];      
+      root.style.setProperty("--bg", colors.bg);      
+      root.style.setProperty("--text", colors.text);      
+      root.style.setProperty("--primary", colors.primary);      
+      root.style.setProperty("--accent", colors.accent);      
+      root.style.setProperty("--card", colors.card);      
+    }      
+      
+    // Close menus when clicking outside      
+    document.addEventListener("click", e => {      
+      if (!e.target.classList.contains("menu-btn")) {      
+        document.querySelectorAll(".dropdown").forEach(menu => menu.style.display = "none");      
+      }      
+    });      
+  
+    // ✅ Show project name + today's date in header  
+    function updateHeader() {  
+      const header = document.getElementById("plannerHeader");  
+      const projectName = localStorage.getItem("projectName") || "Daily Planner";  
+      const today = new Date();  
+      const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };  
+      const formattedDate = today.toLocaleDateString(undefined, options);  
+      header.textContent = `📅 ${projectName} — ${formattedDate}`;  
+    }  
+  
+    renderPlanner();      
+    updateHeader();    
+  </script>    
+</body>      
+</html>
