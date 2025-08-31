@@ -1,142 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title id="title">astream - watch anime</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="./-media/fav2.svg" sizes="any" type="image/svg+xml">
-    <style>div{display:none!important;}</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FocusFlow</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      text-align: center;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: linear-gradient(270deg, #000000, #3a0ca3, #000000);
+      background-size: 400% 400%;
+      animation: moveBg 20s ease infinite;
+      overflow: hidden;
+    }
+
+    /* background gradient animation */
+    @keyframes moveBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* floating animated stars */
+    #bgCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    .website-name {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin: 0;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .proverb {
+      font-size: 1.2rem;
+      margin: 10px 0 30px;
+      font-style: italic;
+      opacity: 0.85;
+    }
+
+    .get-started {
+      display: inline-block;
+      padding: 15px 40px;
+      font-size: 1.2rem;
+      border-radius: 50px;
+      background: linear-gradient(270deg, #6a11cb, #ff006e);
+      background-size: 200% 200%;
+      color: white;
+      text-decoration: none;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: gradientMove 3s linear infinite;
+    }
+
+    .get-started:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(255,0,110,0.7);
+    }
+
+    .about-link {
+      display: inline-block;
+      margin-top: 15px;
+      color: #ffd6ff;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.3s ease;
+    }
+    .about-link:hover {
+      color: #ff80ab;
+    }
+
+    .about-container {
+      max-width: 700px;
+      margin: auto;
+      padding: 20px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 20px;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    /* animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+  </style>
 </head>
-
 <body>
-    <p style="background: #000; color: #fff;text-align:center;">this service is no longer work! find an alternative at <a href="https://everythingmoe.com/">everythingmore.com</a></p>
-    <div id="dim">
-        <div class="history">
-            <div class="historyHead">
-                <h3>Watch History</h3>
-                <button id="closeHistory" onclick="closeHistory()">X</button>
-            </div>
-            <ul class="historyList" id="historyList">
-                History empty
-            </ul>
+  <div class="container">
+    <h1 class="website-name">FocusFlow</h1>
+    <p class="proverb">"Discipline is the bridge between goals and achievement."</p>
+    <a href="start.html" class="get-started">Get Started</a>
+    <br><br>
+    <a href="about.html" class="about-link">About Us</a>
+  </div>
 
-            <p class="historyDetail">
-                The watch history feature can only save up to 10 lists and it is stored locally, meaning it can only be
-                accessed on the current browser and not on any other device. If you wish to delete the watch history,
-                you can click on <a onclick="clearHistory()">Clear History</a>, but please note that it is a permanent
-                action and cannot be undone.
-            </p>
-        </div>
-    </div>
+  <footer>
+    <p>© 2025 FocusFlow • Focus. Learn. Achieve.</p>
+  </footer>
 
-    <div class="container">
+  <canvas id="bgCanvas"></canvas>
 
-        <div id="playerContainer" class="video-container" style="display:
-                block;">
-            <iframe id="player" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                scrolling="no" allowfullscreen src=""></iframe>
-        </div>
+  <script>
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-        <div class="container-search">
-            <button id="homeBtn" class="home-button">
-                <svg width="18px" height="18px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#fff" d="M21.8844 15.2984C21.7278 17.0315
-                            21.476 18.4398 21.1697 19.6963C20.9655 20.9529
-                            19.7403 22 18.4131 22H16.7795C15.8606 22 15.1459
-                            21.267 15.1459 20.3246V16.0314C15.1459 14.9843
-                            14.3291 14.1466 13.3081 14.1466H10.9598C9.93884
-                            14.1466 9.12205 14.9843 9.12205
-                            16.0314V20.3246C9.12205 21.267 8.40736 22 7.48847
-                            22H5.54859C4.2213 22 3.09821 21.0576 2.79191
-                            19.6963C2.48562 18.3351 2.22005 17.0327 2.07722
-                            15.2984C1.89596 13.0974 2.07722 11.0052 2.17932
-                            9.64398C2.17932 8.80628 2.68982 7.96859 3.40451
-                            7.44503L10.5514 2.52356C10.9598 2.20942 11.4703 2
-                            11.9808 2C12.4913 2 13.1039 2.20942 13.5123
-                            2.52356L20.6592 7.44503C21.3739 7.96859 21.8844
-                            8.80628 21.8844 9.64398C21.9865 11.0052 22.0831
-                            13.0993 21.8844 15.2984Z" />
-                </svg>
-            </button>
-            <input type="text" id="queryInput" onkeydown="getSearchByEnter(event)" class="search-input"
-                placeholder="Start by searching.. " value="">
-            <button id="searchBtn" class="search-button">
-                <svg width="18px" height="18px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#fff" d="M18.031 16.617l4.283
-                                4.282-1.415 1.415-4.282-4.283A8.96 8.96 0 0 1 11
-                                20c-4.968 0-9-4.032-9-9s4.032-9 9-9 9 4.032 9
-                                9a8.96 8.96 0 0 1-1.969 5.617zm-2.006-.742A6.977
-                                6.977 0 0 0 18 11c0-3.868-3.133-7-7-7-3.868 0-7
-                                3.132-7 7 0 3.867 3.132 7 7 7a6.977 6.977 0 0 0
-                                4.875-1.975l.15-.15zm-3.847-8.699a2 2 0 1 0
-                                2.646 2.646 4 4 0 1 1-2.646-2.646z" />
-                </svg>
-            </button>
-        </div>
+    let particles = [];
+    for (let i = 0; i < 50; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 3,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5
+      });
+    }
 
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        p.x += p.dx;
+        p.y += p.dy;
+        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
 
-
-        <div class="container-sresult">
-            <div id="animeContainer"> </div>
-
-            <button id="recentBtn" class="recent-button" style="display: block;">
-                Click here to load recent updates
-            </button>
-        </div>
-
-        <div id="animeInfoContainer" style="display: none;">
-            <p id="videoTitle"></p>
-            <span id="status"></span>
-            <span id="subordub"></span>
-            <span id="type"></span>
-            <p id="videoDescription"></p>
-
-            <div class="extraBtn">
-                <button onclick="firstEps()">First Eps</button>
-                <button onclick="prevEps()">Prev Eps</button>
-                <button onclick="nextEps()">Next Eps</button>
-                <button onclick="lastEps()">Last Eps</button>
-            </div>
-
-            <div class="select-container">
-                <div class="left-text">SELECT</div>
-                <select id="selectElement"></select>
-                <button id="episodeButton">WATCH</button>
-            </div>
-
-            <div id="qualityContainer" style="display: none;">
-                <span class="qualityspan">RESOLUTION</span>
-                <div id="serverSelect"></div>
-                <a href="" id="downloadButton" target="_blank">download</a>
-            </div>
-        </div>
-
-        <div id="mainLoading" style="display: none;">
-            <img src="./-media/loading-animation.gif" width="30px" />
-        </div>
-
-        <div id="footerContainer" style="display: block;">
-            <div class="notif" id="spanDonate">
-                <span>Dukung website ini dengan cara berdonasi mulai
-                    dari Rp1000!</span>
-                <a href="https://sociabuzz.com/willydev/tribe" target="_blank" title="Thank you!">DONASI</a>
-            </div>
-
-            <footer class="modern-footer">
-                <div class="footer">
-                    by <a href="https://facebook.com/addstring" target="_blank">WillyDev</a>-
-                    <a href="/search">Fast Search</a> -
-                    <a onclick="showHistory()"> History</a> - <a
-                        href="https://github.com/kuronekony4n/astream">Github</a>
-                </div>
-            </footer>
-        </div>
-    </div>
-    <script src="script.js"></script>
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
 </body>
-
 </html>
