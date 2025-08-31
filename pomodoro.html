@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pomodoro</title>
+<style>
+  :root{
+    --bg:#b84a45;            /* base (changes by theme/mode) */
+    --surface:#c7605a;       /* card bg */
+    --panel:#ffffff;         /* white panel */
+    --text:#ffffff;
+    --muted:#f1eaea;
+    --accent:#ffffff;
+    --ring:rgba(255,255,255,.45);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: Inter, Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display:flex; flex-direction:column; align-items:center;
+  }
+
+  /* HEADER */
+  .topbar{
+    width:100%;
+    max-width:1000px;
+    padding:14px 16px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .project{
+    display:flex; align-items:center; gap:10px;
+    font-weight:800; letter-spacing:.3px;
+  }
+  .project-name{
+    font-size:1.15rem;
+    padding:.35rem .7rem;
+    background: rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:10px;
+  }
+  .top-actions{display:flex; gap:8px; align-items:center}
+  .icon-btn{
+    appearance:none; border:0; cursor:pointer;
+    background: rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.28);
+    color:#fff;
+    padding:.55rem .7rem; border-radius:10px;
+    font-weight:700;
+    display:inline-flex; align-items:center; gap:.45rem;
+  }
+  .icon-btn:active{transform:scale(.98)}
+
+  /* MAIN CARD */
+  .wrap{width:100%; max-width:1000px; margin:8px 16px 24px}
+  .timer-card{
+    background:var(--surface);
+    border:1px solid rgba(255,255,255,.25);
+    border-radius:18px;
+    padding:22px;
+  }
+
+  /* tabs */
+  .tabs{
+    display:flex; gap:8px; justify-content:center; margin-bottom:14px; flex-wrap:wrap;
+  }
+  .tab{
+    user-select:none;
+    padding:8px 14px; border-radius:999px; cursor:pointer;
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25);
+    font-weight:700;
+  }
+  .tab.active{ background:rgba(255,255,255,.34) }
+
+  /* timer display */
+  .timer-face{
+    display:flex; align-items:center; justify-content:center;
+    font-size:clamp(52px, 12vw, 120px);
+    font-weight:900; letter-spacing:2px;
+    padding:14px 0 4px;
+  }
+  .controls{
+    display:flex; justify-content:center; gap:10px; margin:10px 0 4px;
+  }
+  .primary{
+    all:unset; cursor:pointer;
+    background:#fff; color:#333;
+    padding:12px 46px; border-radius:12px; font-weight:900; letter-spacing:.6px;
+    box-shadow:0 8px 24px rgba(0,0,0,.18);
+  }
+  .secondary{
+    all:unset; cursor:pointer;
+    background: rgba(255,255,255,.2);
+    color:#fff; padding:10px 14px; border-radius:10px; font-weight:800;
+    border:1px solid rgba(255,255,255,.28);
+  }
+  .msg{ text-align:center; margin:8px 0 0; opacity:.95 }
+
+  /* proverb */
+  .proverb{
+    text-align:center; margin-top:10px; font-style:italic; opacity:.9;
+  }
+
+  /* two-column layout under timer */
+  .grid{
+    display:grid; grid-template-columns: 1.3fr .9fr; gap:16px; margin-top:16px;
+  }
+  @media (max-width:900px){ .grid{ grid-template-columns:1fr } }
+
+  /* TASKS PANEL */
+  .panel{
+    background:var(--panel); color:#222; border-radius:14px; padding:14px;
+    box-shadow:0 10px 24px rgba(0,0,0,.12);
+  }
+  .panel h3{ margin:0 0 10px; font-size:1rem; letter-spacing:.3px }
+  .task-input{
+    background:#f4f5f8; border:1px dashed #d9dbe4; border-radius:12px;
+    padding:10px; color:#333;
+  }
+  .task-input textarea, .task-input input{
+    width:100%; border:0; background:transparent; outline:0; font-size:.95rem;
+    color:#222; resize:vertical;
+  }
+  .task-tools{ display:flex; gap:8px; align-items:center; margin-top:10px }
+  .chip{
+    background:#e9ecf5; border:1px solid #d7dceb; color:#223;
+    padding:6px 10px; border-radius:999px; font-size:.8rem; display:inline-flex; gap:6px; align-items:center;
+  }
+  .mini{ all:unset; cursor:pointer; font-weight:800; padding:6px 10px; border-radius:10px; background:#111; color:#fff }
+  .ghost{ all:unset; cursor:pointer; padding:6px 10px; border-radius:10px; color:#333; background:#eceff6; font-weight:700 }
+
+  .task-row{
+    display:flex; gap:10px; align-items:flex-start; padding:10px 6px; border-bottom:1px solid #eee;
+  }
+  .task-row:last-child{border-bottom:0}
+  .task-title{ font-weight:700 }
+  .task-meta{ font-size:.8rem; color:#667 }
+  .grow{flex:1}
+
+  .task-actions{ display:flex; gap:6px; }
+  .task-actions button{ all:unset; cursor:pointer; padding:4px 8px; border-radius:8px; background:#f1f3f9; font-weight:700; }
+
+  .options{ position:relative; }
+  .menu{
+    position:absolute; top:30px; right:0; z-index:10; min-width:220px;
+    background:#fff; color:#222; border:1px solid #dde1ee; border-radius:12px; box-shadow:0 18px 40px rgba(0,0,0,.18);
+    display:none; padding:6px;
+  }
+  .menu.open{ display:block }
+  .menu button{
+    all:unset; display:flex; gap:8px; align-items:center; width:100%;
+    padding:10px; border-radius:10px; cursor:pointer; font-weight:700; color:#222;
+  }
+  .menu button:hover{ background:#f4f6fd }
+
+  /* SETTINGS DRAWER */
+  .drawer, .theme-drawer{
+    position:fixed; inset:auto 0 0 0; background:#fff; color:#222; border-top-left-radius:16px; border-top-right-radius:16px;
+    box-shadow:0 -18px 40px rgba(0,0,0,.25); transform:translateY(105%); transition:.25s transform;
+    padding:16px; z-index:50; max-height:78vh; overflow:auto;
+  }
+  .drawer.open, .theme-drawer.open{ transform:translateY(0) }
+  .drawer h3, .theme-drawer h3{ margin:0 0 8px }
+
+  .row{display:flex; align-items:center; gap:10px; margin:8px 0; flex-wrap:wrap}
+  .row label{min-width:150px; font-weight:700}
+  .row input[type=number]{ width:100px; padding:8px; border:1px solid #ccd2e6; border-radius:10px }
+
+  /* theme swatches */
+  .swatches{ display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:10px }
+  .swatch{
+    border:1px solid #e2e6f3; border-radius:12px; overflow:hidden; cursor:pointer; background:#fff;
+  }
+  .swatch .bar{ display:flex; height:42px }
+  .swatch .bar span{ flex:1 }
+  .swatch .name{ padding:8px 10px; font-size:.85rem; font-weight:800 }
+
+  /* footer */
+  footer{ margin:20px 0 24px; opacity:.75; font-size:.9rem }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="topbar">
+    <div class="project">
+      <span class="project-name" id="projectName">Project</span>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" id="themeBtn">🎨 Themes</button>
+      <button class="icon-btn" id="durationBtn">⏱ Durations</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="wrap">
+    <div class="timer-card">
+      <div class="tabs">
+        <div class="tab active" data-mode="work">Pomodoro</div>
+        <div class="tab" data-mode="short">Short Break</div>
+        <div class="tab" data-mode="long">Long Break</div>
+      </div>
+
+      <div class="timer-face" id="time">25:00</div>
+
+      <div class="controls">
+        <button class="primary" id="startStop">START</button>
+        <button class="secondary" id="resetBtn">Reset</button>
+      </div>
+
+      <div class="msg" id="statusMsg">#1 Time to focus!</div>
+      <div class="proverb" id="proverb">“Discipline is the bridge between goals and achievement.”</div>
+
+      <div class="grid">
+        <!-- TASKS -->
+        <section class="panel">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <h3>Tasks</h3>
+            <div class="options">
+              <button class="ghost" id="moreBtn">⋮</button>
+              <div class="menu" id="menu">
+                <button id="clearFinished">🗑 Clear finished tasks</button>
+                <button id="toggleHide">🙈 Hide completed</button>
+                <button id="clearAll">⚠️ Clear all tasks</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="task-input">
+            <input id="taskTitle" placeholder="What are you working on?"/>
+            <div class="task-tools">
+              <span class="chip">Est Pomodoros
+                <button class="ghost" id="estDec">−</button>
+                <span id="estNum">1</span>
+                <button class="ghost" id="estInc">+</button>
+              </span>
+              <button class="mini" id="addTask">Add Task</button>
+            </div>
+            <textarea id="taskNote" placeholder="+ Optional note" rows="2" style="margin-top:8px"></textarea>
+          </div>
+
+          <div id="taskList" style="margin-top:10px"></div>
+        </section>
+
+        <!-- QUICK STATS -->
+        <section class="panel">
+          <h3>Quick Stats</h3>
+          <div class="row"><label>Round</label><div id="roundLabel">1</div></div>
+          <div class="row"><label>Completed Today</label><div id="doneToday">0</div></div>
+          <div class="row"><label>Active Task</label><div id="activeTaskLbl">None</div></div>
+          <hr/>
+          <p style="font-size:.9rem;color:#555">Tip: Click the time to toggle quick edit.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <footer>All data saves locally per project. No sign-in.</footer>
+
+  <!-- DURATION DRAWER -->
+  <div class="drawer" id="drawer">
+    <h3>⏱ Session Durations</h3>
+    <div class="row"><label>Pomodoro (min)</label><input type="number" id="durWork" min="1"></div>
+    <div class="row"><label>Short Break (min)</label><input type="number" id="durShort" min="1"></div>
+    <div class="row"><label>Long Break (min)</label><input type="number" id="durLong" min="1"></div>
+    <div class="row"><label>Long Break Every (rounds)</label><input type="number" id="longEvery" min="1"></div>
+    <div class="row"><button class="mini" id="saveDur">Save</button><button class="ghost" id="closeDur">Close</button></div>
+  </div>
+
+  <!-- THEME DRAWER -->
+  <div class="theme-drawer" id="themeDrawer">
+    <h3>🎨 Themes & Palettes</h3>
+    <p style="margin-top:0;color:#555">Pick a palette. Mode colors (work/short/long) auto-adapt.</p>
+    <div class="swatches" id="swatches"></div>
+    <div class="row" style="margin-top:12px"><button class="ghost" id="closeTheme">Close</button></div>
+  </div>
+
+<script>
+/* ------------------ UTIL / PERSIST ------------------ */
+const $ = s=>document.querySelector(s);
+const $$ = s=>document.querySelectorAll(s);
+const store = {
+  get(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d }catch{ return d }},
+  set(k, v){ localStorage.setItem(k, JSON.stringify(v)) }
+};
+
+// find active project: URL > exact timer match > most recent that includes pomodoro.html
+function getActiveProject(){
+  const q = Object.fromEntries(new URLSearchParams(location.search).entries());
+  const timers = store.get('timers', []);
+  if(q.timerId){
+    const t = timers.find(x=>String(x.id)===String(q.timerId));
+    if(t) return t;
+  }
+  if(q.project){
+    const t = timers.find(x=>x.name===q.project);
+    if(t) return t;
+  }
+  // pick most recent timer that has pomodoro.html
+  const sorted = [...timers].sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0));
+  const t = sorted.find(x=>Array.isArray(x.features) && x.features.some(f=>String(f.link).includes('pomodoro.html')));
+  return t || { id:'default', name:'My Project', features:[] };
+}
+const project = getActiveProject();
+$('#projectName').textContent = project.name;
+
+/* ------------------ THEMES ------------------ */
+/* your requested palettes */
+const PALETTES = [
+  {id:'pom-classic', name:'Vibrant & Energizing (Classic Pomodoro)',
+   work:'#d95550', short:'#4c9195', long:'#457ca3', surface:'#cc6a65'},
+  {id:'modern-balance', name:'Balanced & Modern (Navy/Teal)',
+   work:'#0f2747', short:'#0f5e5e', long:'#134b7d', surface:'#203255'},
+  {id:'forest-earth', name:'Calm • Forest & Earth',
+   work:'#228B22', short:'#8A9A5B', long:'#45734e', surface:'#2b6f2b'},
+  {id:'ocean-sky', name:'Calm • Ocean & Sky',
+   work:'#003153', short:'#87CEEB', long:'#457ca3', surface:'#0b405f'},
+  {id:'soft-muted', name:'Relaxing • Soft & Muted',
+   work:'#c27eb8', short:'#8fa0c2', long:'#b0b6c1', surface:'#d7c6de'}
+];
+
+function paintSwatches(){
+  const box = $('#swatches'); box.innerHTML='';
+  PALETTES.forEach(p=>{
+    const card = document.createElement('div'); card.className='swatch';
+    card.innerHTML = `<div class="bar">
+      <span style="background:${p.work}"></span>
+      <span style="background:${p.short}"></span>
+      <span style="background:${p.long}"></span>
+      <span style="background:${p.surface}"></span>
+    </div><div class="name">${p.name}</div>`;
+    card.onclick = ()=>{ state.theme = p.id; saveState(); applyMode(state.mode); };
+    box.appendChild(card);
+  });
+}
+
+/* ------------------ STATE ------------------ */
+const KEY = `pf_${project.id}_state`;
+const DEFAULT = {
+  mode:'work',
+  round:1,
+  completedToday:0,
+  durations:{ work:25, short:5, long:15, longEvery:4 },
+  theme:'pom-classic',
+  tasks:[],
+  hideCompleted:false,
+  activeTaskId:null
+};
+let state = Object.assign({}, DEFAULT, store.get(KEY, {}));
+
+function saveState(){ store.set(KEY, state) }
+
+/* ------------------ MODE / COLORS ------------------ */
+function getPalette(){
+  const p = PALETTES.find(x=>x.id===state.theme) || PALETTES[0];
+  return p;
+}
+function applyMode(mode){
+  state.mode = mode;
+  saveState();
+  const pal = getPalette();
+  const col = mode==='work'?pal.work : mode==='short'?pal.short : pal.long;
+  document.documentElement.style.setProperty('--bg', col);
+  document.documentElement.style.setProperty('--surface', pal.surface);
+  /* update tabs */
+  $$('.tab').forEach(t=>t.classList.toggle('active', t.dataset.mode===mode));
+  // durations -> set timeLeft and UI only if not running
+  if(!running){
+    timeLeft = state.durations[mode] * 60;
+    renderTime();
+  }
+  updateTitle();
+}
+function updateTitle(){
+  document.title = `${formatMMSS(timeLeft)} — ${state.mode==='work'?'Pomodoro':state.mode==='short'?'Short Break':'Long Break'}`;
+}
+
+/* ------------------ TIMER ------------------ */
+let timeLeft = state.durations[state.mode] * 60;
+let running = false;
+let timerId = null;
+let proverbTimerId = null;
+const PROVERBS = [
+  "Discipline is the bridge between goals and achievement.",
+  "Small steps every day lead to big results.",
+  "Focus is the art of saying no.",
+  "Your future is created by what you do today.",
+  "Deep work > busy work.",
+  "Start where you are. Use what you have. Do what you can.",
+  "Consistency carves canyons."
+];
+
+function formatMMSS(s){ const m=Math.floor(s/60), x=s%60; return `${m}:${x<10?'0':''}${x}` }
+function renderTime(){ $('#time').textContent = formatMMSS(timeLeft); updateTitle(); }
+function setMessage(){ $('#statusMsg').textContent = `#${state.round} ${state.mode==='work'?'Time to focus!':state.mode==='short'?'Short break':'Long break'}` }
+
+function startProverbLoop(){
+  const roll = ()=>{ $('#proverb').textContent = '“'+ PROVERBS[(Math.random()*PROVERBS.length)|0] +'”' };
+  roll();
+  clearInterval(proverbTimerId);
+  proverbTimerId = setInterval(roll, 5*60*1000); // every 5 minutes
+}
+function stopProverbLoop(){ clearInterval(proverbTimerId) }
+
+function startTimer(){
+  if(running) return;
+  running = true;
+  $('#startStop').textContent = 'STOP';
+  startProverbLoop();
+  timerId = setInterval(()=>{
+    if(timeLeft>0){
+      timeLeft--; renderTime();
+    }else{
+      completeSession();
+    }
+  }, 1000);
+}
+function stopTimer(){
+  running=false;
+  clearInterval(timerId);
+  $('#startStop').textContent = 'START';
+  stopProverbLoop();
+}
+function resetTimer(){
+  stopTimer();
+  timeLeft = state.durations[state.mode] * 60;
+  renderTime();
+}
+
+function completeSession(){
+  stopTimer();
+  // sound
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const o = ctx.createOscillator(); const g = ctx.createGain();
+    o.frequency.value=880; o.connect(g); g.connect(ctx.destination);
+    o.start(); g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+1); setTimeout(()=>o.stop(), 1000);
+  }catch{}
+  // notification
+  if('Notification' in window && Notification.permission==='granted'){
+    new Notification('Time\'s up!', { body: state.mode==='work'?'Great job! Take a break.':'Break over. Back to focus.' });
+  }
+  if(state.mode==='work'){
+    state.completedToday++;
+    if(state.activeTaskId){
+      const t = state.tasks.find(x=>x.id===state.activeTaskId);
+      if(t){ t.done = (t.done||0) + 1; }
+    }
+    // move to break
+    state.round++;
+    const next = (state.round-1)%state.durations.longEvery===0 ? 'long' : 'short';
+    saveState(); renderTasks(); $('#doneToday').textContent = state.completedToday;
+    applyMode(next);
+  }else{
+    // back to work
+    applyMode('work');
+  }
+}
+
+$('#startStop').onclick = ()=> running ? stopTimer() : startTimer();
+$('#resetBtn').onclick = resetTimer;
+
+/* quick edit by clicking the time */
+$('#time').style.cursor='pointer';
+$('#time').title='Click to quick-edit time';
+$('#time').onclick = ()=>{
+  const m = prompt('Set minutes for this session:', state.durations[state.mode]);
+  if(!m) return;
+  const v = Math.max(1, parseInt(m,10)||state.durations[state.mode]);
+  state.durations[state.mode] = v; saveState();
+  resetTimer();
+};
+
+/* tabs */
+$$('.tab').forEach(t=> t.addEventListener('click', ()=>{ applyMode(t.dataset.mode) }) );
+
+/* initial */
+applyMode(state.mode);
+timeLeft = state.durations[state.mode]*60; renderTime(); setMessage();
+$('#doneToday').textContent = state.completedToday;
+$('#roundLabel').textContent = state.round;
+
+/* Notifications permission on first click of START */
+document.addEventListener('click', ()=>{
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+},{once:true});
+
+/* ------------------ DURATION DRAWER (hidden editor) ------------------ */
+const drawer = $('#drawer');
+$('#durationBtn').onclick = ()=>{
+  $('#durWork').value = state.durations.work;
+  $('#durShort').value = state.durations.short;
+  $('#durLong').value = state.durations.long;
+  $('#longEvery').value = state.durations.longEvery;
+  drawer.classList.add('open');
+};
+$('#closeDur').onclick = ()=> drawer.classList.remove('open');
+$('#saveDur').onclick = ()=>{
+  state.durations.work = Math.max(1, parseInt($('#durWork').value,10)||state.durations.work);
+  state.durations.short = Math.max(1, parseInt($('#durShort').value,10)||state.durations.short);
+  state.durations.long = Math.max(1, parseInt($('#durLong').value,10)||state.durations.long);
+  state.durations.longEvery = Math.max(1, parseInt($('#longEvery').value,10)||state.durations.longEvery);
+  saveState();
+  drawer.classList.remove('open');
+  resetTimer();
+  setMessage();
+};
+
+/* ------------------ THEME DRAWER ------------------ */
+paintSwatches();
+const themeDrawer = $('#themeDrawer');
+$('#themeBtn').onclick = ()=> themeDrawer.classList.add('open');
+$('#closeTheme').onclick = ()=> themeDrawer.classList.remove('open');
+
+/* ------------------ TASKS ------------------ */
+const list = $('#taskList');
+let est = 1;
+$('#estInc').onclick = ()=>{ est++; $('#estNum').textContent = est; };
+$('#estDec').onclick = ()=>{ est = Math.max(1, est-1); $('#estNum').textContent = est; };
+
+$('#addTask').onclick = ()=>{
+  const title = $('#taskTitle').value.trim();
+  if(!title) return alert('Add a task title');
+  const note = $('#taskNote').value.trim();
+  const id = 'tsk_'+Date.now();
+  state.tasks.push({ id, title, est, done:0, note });
+  $('#taskTitle').value=''; $('#taskNote').value=''; est=1; $('#estNum').textContent=est;
+  saveState(); renderTasks();
+};
+
+$('#moreBtn').onclick = ()=>{
+  $('#menu').classList.toggle('open');
+};
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.options')) $('#menu').classList.remove('open');
+});
+
+$('#clearFinished').onclick = ()=>{
+  state.tasks = state.tasks.filter(t=> (t.done||0) < (t.est||1));
+  saveState(); renderTasks();
+};
+$('#toggleHide').onclick = ()=>{
+  state.hideCompleted = !state.hideCompleted; saveState(); renderTasks();
+  $('#toggleHide').textContent = state.hideCompleted ? '👀 Show completed' : '🙈 Hide completed';
+};
+$('#clearAll').onclick = ()=>{
+  if(confirm('Clear all tasks?')){ state.tasks=[]; saveState(); renderTasks(); }
+};
+
+function renderTasks(){
+  list.innerHTML='';
+  const tasks = state.tasks.filter(t=> !state.hideCompleted || (t.done||0) < (t.est||1));
+  tasks.forEach(t=>{
+    const row = document.createElement('div'); row.className='task-row';
+    const sel = document.createElement('input'); sel.type='radio'; sel.name='active';
+    sel.checked = state.activeTaskId===t.id; sel.style.marginTop='4px';
+    sel.onchange = ()=>{ state.activeTaskId=t.id; saveState(); $('#activeTaskLbl').textContent=t.title; };
+    const chk = document.createElement('input'); chk.type='checkbox'; chk.title='Mark finished';
+    chk.checked = (t.done||0) >= (t.est||1); chk.onchange = ()=>{ if(chk.checked){ t.done=t.est } else { t.done=Math.min(t.done, t.est-1) } saveState(); renderTasks(); };
+    const main = document.createElement('div'); main.className='grow';
+    main.innerHTML = `<div class="task-title">${t.title}</div>
+      <div class="task-meta">${t.done}/${t.est} pomodoros ${t.note? '• '+t.note:''}</div>`;
+    const act = document.createElement('div'); act.className='task-actions';
+    const plus = document.createElement('button'); plus.textContent='＋'; plus.title='Increment done';
+    plus.onclick = ()=>{ t.done=Math.min(t.est, (t.done||0)+1); saveState(); renderTasks(); };
+    const minus = document.createElement('button'); minus.textContent='－'; minus.title='Decrement done';
+    minus.onclick = ()=>{ t.done=Math.max(0, (t.done||0)-1); saveState(); renderTasks(); };
+    const del = document.createElement('button'); del.textContent='🗑'; del.title='Delete';
+    del.onclick = ()=>{ state.tasks = state.tasks.filter(x=>x.id!==t.id); saveState(); renderTasks(); };
+    act.append(minus, plus, del);
+    row.append(sel, chk, main, act);
+    list.appendChild(row);
+  });
+  const active = state.tasks.find(x=>x.id===state.activeTaskId);
+  $('#activeTaskLbl').textContent = active?active.title:'None';
+}
+renderTasks();
+$('#toggleHide').textContent = state.hideCompleted ? '👀 Show completed' : '🙈 Hide completed';
+
+/* ensure message correct on load */
+setMessage();
+</script>
+</body>
+</html>
