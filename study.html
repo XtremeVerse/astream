@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Tools - Productivity Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(0,0,0,0.5);
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 30px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.1);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      color: #ffe97f;
+    }
+
+    .card button {
+      margin-top: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #ffe97f;
+      color: #333;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .card button:hover {
+      background: #ffd43b;
+    }
+
+    footer {
+      background: rgba(0,0,0,0.5);
+      padding: 10px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>📘 Study Tools</header>
+
+  <div class="container">
+    <!-- Pomodoro -->
+    <div class="card">
+      <h2>Pomodoro Timer</h2>
+      <p>Set custom study and break intervals to stay focused.</p>
+      <button onclick="location.href='pomodoro.html'">Open</button>
+    </div>
+
+    <!-- Task Input -->
+    <div class="card">
+      <h2>Custom Task Input</h2>
+      <p>Enter subjects, chapters, or goals for today’s session.</p>
+      <button onclick="location.href='tasks.html'">Open</button>
+    </div>
+
+    <!-- Planner -->
+    <div class="card">
+      <h2>Daily Planner</h2>
+      <p>Organize tasks with deadlines and priorities.</p>
+      <button onclick="location.href='planner.html'">Open</button>
+    </div>
+
+    <!-- Progress -->
+    <div class="card">
+      <h2>Progress Tracker</h2>
+      <p>Visualize your completed vs pending tasks.</p>
+      <button onclick="location.href='progress.html'">Open</button>
+    </div>
+
+    <!-- Notes -->
+    <div class="card">
+      <h2>Notes Pad</h2>
+      <p>Write and save quick notes directly in your browser.</p>
+      <button onclick="location.href='notes.html'">Open</button>
+    </div>
+  </div>
+
+  <footer>✨ Made with focus & productivity in mind ✨</footer>
+</body>
+</html>
