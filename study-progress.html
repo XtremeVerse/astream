@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Study Progress</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      margin: 0;
+      font-family: Poppins, Arial, sans-serif;
+      background: linear-gradient(120deg, #3a0ca3, #7209b7, #3A248A);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      width: 100%;
+      padding: 22px;
+      background: rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      text-align: center;
+    }
+    header h1 { margin: 0; font-size: 2rem; }
+    header p { margin: 6px 0 0; font-style: italic; color: #e9d7ff; }
+
+    .wrap { width:min(1000px, 92vw); margin:24px auto; }
+    .card {
+      background: #ffffff14;
+      border: 1px solid #ffffff22;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .card h3 { margin: 0 0 10px 0; }
+    .progress-bar {
+      height: 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.2);
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6a11cb, #ff006e);
+      transition: width .3s;
+    }
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+      opacity: 0.85;
+    }
+    footer {
+      margin-top: auto;
+      padding: 14px;
+      opacity: .7;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>📊 Study Progress</h1>
+    <p>"Small steps daily become big achievements."</p>
+  </header>
+
+  <div class="wrap" id="progress-list"></div>
+
+  <footer>© 2025 My Timer Website</footer>
+
+  <script>
+    function loadProgress() {
+      const list = document.getElementById('progress-list');
+      const timers = JSON.parse(localStorage.getItem('timers') || '[]');
+      list.innerHTML = '';
+
+      if (!timers.length) {
+        list.innerHTML = '<p style="opacity:.8;text-align:center;">No projects yet. Go to Start and create one!</p>';
+        return;
+      }
+
+      timers.forEach(t => {
+        const total = t.features?.length || 0;
+        const done = t.features?.filter(f => f.done).length || 0;
+        const percent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+        // --- Monthly progress (simplified: count done features as "progress") ---
+        const createdDate = new Date(t.createdAt || Date.now());
+        const now = new Date();
+        const sameMonth = createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
+        const monthly = sameMonth ? percent : 0;
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <h3>${t.name}</h3>
+          <div class="progress-bar"><div class="progress-bar-fill" style="width:${percent}%;"></div></div>
+          <div class="stats">
+            <span>${done}/${total} tasks done</span>
+            <span>${percent}%</span>
+          </div>
+          <div class="stats">
+            <span>📅 Created: ${createdDate.toLocaleDateString()}</span>
+            <span>📈 This month: ${monthly}%</span>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    loadProgress();
+  </script>
+</body>
+</html>
